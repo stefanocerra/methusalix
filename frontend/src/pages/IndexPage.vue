@@ -3,21 +3,19 @@
     <div class="col-md-8 col-sm-12 col-xs-12 room-borders">
       <p>Babaorum</p>
       <div class="row justify-around no-wrap-md wrap-sm">
-        <!-- PlantComponent v-for ...roombabaorum computed -->
-<!--        <PlantComponent name="fritz"></PlantComponent>-->
-<!--        <PlantComponent name="hans"></PlantComponent>-->
+        <PlantComponent v-for="plant in babaorumPlants" v-bind:key="plant.id" :plant="plant"></PlantComponent>
       </div>
     </div>
     <div class="col-md-4 col-sm-12 col-xs-12 room-borders">
       <p>Kleinbonum</p>
       <div class="row justify-around no-wrap-md wrap-sm">
-<!--        <PlantComponent name="peter"></PlantComponent>-->
+        <PlantComponent v-for="plant in kleinbonumPlants" v-bind:key="plant.id" :plant="plant"></PlantComponent>
       </div>
     </div>
     <div class="col-12 room-borders">
       <p>Laudanum</p>
       <div class="row justify-around no-wrap-md wrap-sm">
-<!--        <PlantComponent name="karin"></PlantComponent>-->
+        <PlantComponent v-for="plant in laudanumPlants" v-bind:key="plant.id" :plant="plant"></PlantComponent>
       </div>
     </div>
     <div class="col-12 room-borders">
@@ -39,52 +37,39 @@
 </template>
 
 <script lang="ts">
-import { Todo, Meta } from 'components/models';
 import PlantComponent from 'components/PlantComponent.vue';
 import {computed, defineComponent, ref} from 'vue';
-import {useCounterStore} from "stores/example-store";
+import {usePlantStore} from "stores/PlantStore";
 import {storeToRefs} from "pinia";
 
 export default defineComponent({
   name: 'IndexPage',
   components: {PlantComponent },
   setup () {
-    const appStore = useCounterStore();
-    appStore.loadPlants()
+    const plantStore = usePlantStore();
+    plantStore.loadPlants()
 
     //const plants = appStore.listPlants;
     //console.log("plants", plants)
-    const { plants } = storeToRefs(appStore)
+    const { plants } = storeToRefs(plantStore)
 
     const aremoricaPlants = computed(() => {
       return plants.value.filter((plant) => plant.room === 'Aremorica');
     });
-    const todos = ref<Todo[]>([
-      {
-        id: 1,
-        content: 'ct1'
-      },
-      {
-        id: 2,
-        content: 'ct2'
-      },
-      {
-        id: 3,
-        content: 'ct3'
-      },
-      {
-        id: 4,
-        content: 'ct4'
-      },
-      {
-        id: 5,
-        content: 'ct5'
-      }
-    ]);
-    const meta = ref<Meta>({
-      totalCount: 1200
+
+    const kleinbonumPlants = computed(() => {
+      return plants.value.filter((plant) => plant.room === 'Kleinbonum');
     });
-    return { todos, meta, plants, aremoricaPlants };
+
+    const babaorumPlants = computed(() => {
+      return plants.value.filter((plant) => plant.room === 'Babaorum');
+    });
+
+    const laudanumPlants = computed(() => {
+      return plants.value.filter((plant) => plant.room === 'Laudanum');
+    });
+
+    return { plants, aremoricaPlants, kleinbonumPlants, babaorumPlants, laudanumPlants };
   }
 });
 </script>

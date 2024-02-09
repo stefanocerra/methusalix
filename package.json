@@ -1,0 +1,15 @@
+{
+  "name": "methusalix",
+  "version": "1.0.0",
+  "license": "MIT",
+  "description": "Eine Pflanzen App, damit unsere Pflanzen nicht sterben.",
+  "scripts": {
+    "start-server": "pocketbase serve",
+    "start-client": "cd frontend && yarn dev",
+    "start": "concurrently --names \"BACKEND,FRONTEND\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run start-server\" \"npm run start-client\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

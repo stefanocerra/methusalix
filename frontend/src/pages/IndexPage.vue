@@ -1,25 +1,25 @@
 <template>
   <q-page class="row q-pa-md">
-    <div class="col-md-8 col-sm-12 col-xs-12 room-borders">
-      <p>Babaorum</p>
+    <div class="col-md-8 col-sm-12 col-xs-12 room-bottom-borders">
+      <p class="q-pa-xs text-h6 text-weight-light">Babaorum</p>
       <div class="row justify-around no-wrap-md wrap-sm">
         <PlantComponent v-for="plant in babaorumPlants" v-bind:key="plant.id" :plant="plant"></PlantComponent>
       </div>
     </div>
-    <div class="col-md-4 col-sm-12 col-xs-12 room-borders">
-      <p>Kleinbonum</p>
+    <div class="col-md-4 col-sm-12 col-xs-12 room-bottom-borders room-left-borders">
+      <p class="q-pa-xs text-h6 text-weight-light">Kleinbonum</p>
       <div class="row justify-around no-wrap-md wrap-sm">
         <PlantComponent v-for="plant in kleinbonumPlants" v-bind:key="plant.id" :plant="plant"></PlantComponent>
       </div>
     </div>
-    <div class="col-12 room-borders">
-      <p>Laudanum</p>
+    <div class="col-12 room-bottom-borders">
+      <p class="q-pa-xs text-h6 text-weight-light">Laudanum</p>
       <div class="row justify-around no-wrap-md wrap-sm">
         <PlantComponent v-for="plant in laudanumPlants" v-bind:key="plant.id" :plant="plant"></PlantComponent>
       </div>
     </div>
     <div class="col-12 room-borders">
-      <p>Aremorica</p>
+      <p class="q-pa-xs text-h6 text-weight-light">Aremorica</p>
       <div class="row justify-around no-wrap-md wrap-sm">
         <PlantComponent v-for="plant in aremoricaPlants" v-bind:key="plant.id" :plant="plant"></PlantComponent>
       </div>

@@ -61,16 +61,20 @@
           <div class="row">
             <q-select
               class="col q-mr-sm"
+              ref="creatorNameRef"
               v-model="creatorName"
               :options="creatorNames"
               label="Name"
+              :rules="creatorNameRules"
             />
             <q-select
               class="col"
+              ref="waterLevelRef"
               v-if="!waterNeeded"
               v-model="waterLevel"
               :options="waterLevels"
               label="Water level"
+              :rules="waterLevelRules"
             />
           </div>
 
@@ -83,14 +87,14 @@
               type="textarea"
             />
           </div>
-          <q-card-actions align="right">
+          <div class="flex justify-end">
             <q-btn
               align="right"
               @click="addLogBookEntry"
               color="primary"
               :label="addBtnTxt"
             />
-          </q-card-actions>
+          </div>
 
         </div>
       </q-card-section>
@@ -146,8 +150,6 @@ import {
 import {Plant} from './models'
 import {storeToRefs} from 'pinia';
 import {usePlantStore} from 'stores/PlantStore';
-import {dom} from "quasar";
-import width = dom.width;
 
 export default defineComponent({
   name: 'ExampleComponent',
@@ -166,11 +168,14 @@ export default defineComponent({
 
     const detailVisible = ref(false);
     const careInstructionsVisible = ref(false);
-    const creatorName = ref('');
-    const waterLevel = ref('');
+    const creatorNameRef = ref(null);
+    const creatorName = ref(null);
+    const waterLevelRef = ref(null);
+    const waterLevel = ref(null);
     const comment = ref('');
     const waterNeeded = ref(false)
     const addBtnTxt = ref('Add');
+
 
     const waterLevelIndicator =  computed(()=> {
       if (plantStore.getLogsForPlant(props.plant.id).length > 0) {
@@ -214,9 +219,6 @@ export default defineComponent({
             }
 
           } else if (latestPlantLog.waterlevel !== 0) {
-            console.log('current dAte', currentDate)
-            console.log('lates date', latestLogDate)
-            console.log('date difference', latestLogDate + 172800000 < currentDate)
             return 'Check';
           } else {
             return 'OK'
@@ -247,26 +249,36 @@ export default defineComponent({
       careInstructionsVisible.value = true;
     }
 
+    const creatorNameRules = [val => (val && val.length > 0) || 'Please type something'];
+    const waterLevelRules = [val => (val && val.length > 0) || 'Please type something'];
+
+
     const addLogBookEntry = () => {
+      creatorNameRef.value.validate();
+      waterLevelRef.value.validate();
 
-      if (!waterNeeded.value) {
-        const convertedWaterLvl = waterLevel.value.split('%')[0];
+      if (!creatorNameRef.value.hasError && !waterLevelRef.value.hasError) {
+        if (!waterNeeded.value) {
+          const convertedWaterLvl = waterLevel.value.split('%')[0];
 
-        if (parseInt(convertedWaterLvl) === 0) {
-          waterNeeded.value = true;
-          addBtnTxt.value = 'Watered';
+          if (parseInt(convertedWaterLvl) === 0) {
+            waterNeeded.value = true;
+            addBtnTxt.value = 'Watered';
+          }
+
+          plantStore.createLogEntry(creatorName.value, 'Check', parseInt(convertedWaterLvl) , comment.value, props.plant.id);
+        } else {
+          plantStore.createLogEntry(creatorName.value, 'Water', 100, comment.value, props.plant.id);
+          waterNeeded.value = false;
+          addBtnTxt.value = 'Add';
         }
 
-        plantStore.createLogEntry(creatorName.value, 'Check', parseInt(convertedWaterLvl) , comment.value, props.plant.id);
-      } else {
-        plantStore.createLogEntry(creatorName.value, 'Water', 100, comment.value, props.plant.id);
-        waterNeeded.value = false;
-        addBtnTxt.value = 'Add';
+        creatorName.value = null;
+        waterLevel.value = null;
+        comment.value = '';
+        creatorNameRef.value.resetValidation()
+        waterLevelRef.value.resetValidation()
       }
-
-      creatorName.value = '';
-      waterLevel.value = '';
-      comment.value = '';
     }
 
     const openLink = (url: string) => {
@@ -321,6 +333,10 @@ export default defineComponent({
       addBtnTxt,
       waterNeeded,
       waterLevelIndicator,
+      creatorNameRef,
+      creatorNameRules,
+      waterLevelRef,
+      waterLevelRules
     }
   },
 });

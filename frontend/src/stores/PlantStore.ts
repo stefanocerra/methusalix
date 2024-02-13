@@ -29,7 +29,6 @@ export const usePlantStore = defineStore('plant', {
         sort: 'room',
         expand: 'logbook(plants).fk_plant'
       }).then(plants => {
-        console.log("plants", plants)
         this.plants = plants
         /*for (const plant of plants) {
           getLogbookForPlant(plant.id)
@@ -39,7 +38,6 @@ export const usePlantStore = defineStore('plant', {
       pb.collection('logbook').getFullList({
         sort: '-created, fk_plant'
       }).then(logs => {
-        console.log("logbook", logs)
         this.logs = logs
         /*for (const plant of plants) {
           getLogbookForPlant(plant.id)
@@ -47,8 +45,6 @@ export const usePlantStore = defineStore('plant', {
       }).catch((error) => console.log(error));
 
       pb.collection('logbook').subscribe('*',  (e) => {
-        console.log(e.action);
-        console.log(e.record);
         this.logs.push(e.record);
         this.logs.sort((a,b) =>  new Date(b.created) - new Date(a.created));
       })

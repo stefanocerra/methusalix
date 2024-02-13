@@ -4,10 +4,10 @@
     @click="openPlantComponent"
   >
     <p>{{ plant.name }}</p>
-    <q-icon
-      style="height: 150px; width: 100px;"
-      :name="`img:http://127.0.0.1:8090/api/files/plants/${plant.id}/${plant.picture}`" />
-    <p>{{ plantStatus }}</p>
+    <q-img
+      style="height: 150px; width: 100px; border-radius: 5px;"
+      :src="`http://127.0.0.1:8090/api/files/plants/${plant.id}/${plant.picture}`" />
+    <p>Status: {{ plantStatus }}</p>
   </div>
   <q-dialog v-model="detailVisible">
     <q-card>
@@ -21,9 +21,9 @@
             </div>
           </div>
           <div>
-            <q-icon
-              style="height: 150px; width: 100px;"
-              :name="`img:http://127.0.0.1:8090/api/files/plants/${plant.id}/${plant.picture}`"
+            <q-img
+              style="height: 150px; width: 100px; border-radius: 5px;"
+              :src="`http://127.0.0.1:8090/api/files/plants/${plant.id}/${plant.picture}`"
             />
           </div>
         </div>
@@ -137,43 +137,61 @@ export default defineComponent({
     const comment = ref('');
     const waterNeeded = ref(false)
     const addBtnTxt = ref('Add');
-    const plantStatus = ref('');
 
-    const status = computed(() => {
-      return 'hi' + props.plant.drying_interval
-    })
+    // const status = computed(() => {
+    //   return 'hi' + getLogsForPlant(props.plant.id)
+    // })
 
-    const checkStatus = () => {
-      const plantId = props.plant.id;
-      const plantLogs = logs.value.filter((log: object) => {
-        return log.fk_plant === plantId
-      });
+    // // const testStore = useTestStore();
+    // const status =  computed(()=> {
+    //   if (plantStore.getLogsForPlant(props.plant.id).length > 0) {
+    //     return plantStore.getLogsForPlant(props.plant.id)[0].created
+    //   } else {
+    //     return '';
+    //   }
+    // });
 
-      const latestPlantLog: object = plantLogs[0];
+    const plantStatus =  computed(()=> {
+      if (plantStore.getLogsForPlant(props.plant.id).length > 0) {
+        const plantId = props.plant.id;
+        const plantLogs = logs.value.filter((log: object) => {
+          return log.fk_plant === plantId
+        });
 
-      console.log('latestPlantLogsss', latestPlantLog)
-      const plant = plants.value.filter(plant => plant.id === plantId);
-      const dryingInterval: number = plant.drying_interval * 86400000;
+        const latestPlantLog: object = plantLogs[0];
 
-      const currentDate: number = new Date().getTime();
-      const latestLogDate: number = new Date(latestPlantLog.created).getTime();
+        // const plant = plants.value.filter(plant => plant.id === plantId);
+        const dryingInterval: number = props.plant.drying_interval * 86400000;
 
-      // Check if last log entry is older than 2 days
-      if (latestLogDate + 172800000 < currentDate) {
-        if(latestLogDate + dryingInterval <= currentDate && latestPlantLog.waterlevel === 0) {
-          return 'Water';
+        const currentDate: number = new Date().getTime();
+        const latestLogDate: number = new Date(latestPlantLog.created).getTime();
+
+        // Check if last log entry is older than 2 days
+        if (latestLogDate + 172800000 < currentDate || latestPlantLog.waterlevel === 0) {
+          if(latestLogDate + dryingInterval <= currentDate && latestPlantLog.waterlevel === 0) {
+            return 'Water now!';
+          } else if (latestLogDate + dryingInterval > currentDate && latestPlantLog.waterlevel === 0) {
+            if (Math.ceil((latestLogDate + dryingInterval - currentDate) /  86400000) === 1) {
+              return 'Water in 1 day.';
+            } else {
+              return 'Water in ' + Math.ceil((latestLogDate + dryingInterval - currentDate) /  86400000) + ' days.';
+            }
+
+          } else if (latestPlantLog.waterlevel !== 0) {
+            console.log('current dAte', currentDate)
+            console.log('lates date', latestLogDate)
+            console.log('date difference', latestLogDate + 172800000 < currentDate)
+            return 'Check';
+          } else {
+            return 'OK'
+          }
         } else {
-          console.log('current dAte', currentDate)
-          console.log('lates date', latestLogDate)
-          console.log('date difference', latestLogDate + 172800000 < currentDate)
-          return 'Check';
+          return 'OK';
         }
       } else {
-        return 'OK';
+        return '';
       }
-    }
-
-    plantStatus.value = checkStatus();
+    });
 
     const openPlantComponent = () => {
       detailVisible.value = true;
@@ -187,14 +205,6 @@ export default defineComponent({
         addBtnTxt.value = 'Add';
         waterNeeded.value = false;
       }
-
-
-      // const currentDate = new Date().getTime();
-      // const latestLogDate = new Date(latestPlantLog.created).getTime();
-      //
-      // console.log("current dAte", currentDate)
-      // console.log("lates date", latestLogDate)
-      // console.log("date difference", latestLogDate + 172800000 < currentDate)
     }
 
     const openCareInstructions = () => {
@@ -258,7 +268,7 @@ export default defineComponent({
       '100%',
     ]
     return {
-      status,
+      plantStatus,
       detailVisible,
       careInstructionsVisible,
       openPlantComponent,
@@ -274,7 +284,6 @@ export default defineComponent({
       openLink,
       addBtnTxt,
       waterNeeded,
-      plantStatus
     }
   },
 });

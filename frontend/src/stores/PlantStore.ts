@@ -18,7 +18,7 @@ export const usePlantStore = defineStore('plant', {
   }),
   getters: {
     getLogsForPlant: (state) => {
-      return (plantId: number) => state.logs.filter((log) => {
+      return (plantId: string) => state.logs.filter((log) => {
         return log.fk_plant === plantId
       })
     },
@@ -81,6 +81,7 @@ export const usePlantStore = defineStore('plant', {
         console.log(e.action);
         console.log(e.record);
         this.logs.push(e.record);
+        this.logs.sort((a,b) =>  new Date(b.created) - new Date(a.created));
       })
     },
     createLogEntry(creatorName: string, type: string, waterLevel: number, comment: string, plantId: string) {

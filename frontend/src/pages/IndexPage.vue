@@ -25,22 +25,13 @@
       </div>
     </div>
   </q-page>
-  <!--<q-page class="row items-center justify-evenly">
-    <example-component
-      title="Example component"
-      active
-      :plants="plants"
-      :todos="todos"
-      :meta="meta"
-    ></example-component>
-  </q-page>-->
 </template>
 
 <script lang="ts">
 import PlantComponent from 'components/PlantComponent.vue';
-import {computed, defineComponent, ref} from 'vue';
-import {usePlantStore} from "stores/PlantStore";
-import {storeToRefs} from "pinia";
+import {computed, defineComponent} from 'vue';
+import {usePlantStore} from 'stores/PlantStore';
+import {storeToRefs} from 'pinia';
 
 export default defineComponent({
   name: 'IndexPage',
@@ -49,8 +40,6 @@ export default defineComponent({
     const plantStore = usePlantStore();
     plantStore.loadPlants()
 
-    //const plants = appStore.listPlants;
-    //console.log("plants", plants)
     const { plants } = storeToRefs(plantStore)
 
     const aremoricaPlants = computed(() => {

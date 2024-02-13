@@ -8,6 +8,7 @@ export interface Meta {
 }
 
 export interface Plant {
+  id: string;
   name: string;
   room: string;
   picture: string;

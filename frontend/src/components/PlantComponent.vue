@@ -1,69 +1,76 @@
 <template>
   <div
-    class="plant-size"
+    class="plant-size row"
     @click="openPlantComponent"
   >
     <p>{{ plant.name }}</p>
     <q-icon
-      style="height: 150px; width: 100px"
+      style="height: 150px; width: 100px;"
       :name="`img:http://127.0.0.1:8090/api/files/plants/${plant.id}/${plant.picture}`" />
-    <p>{{ status }}</p>
+    <p>{{ plantStatus }}</p>
   </div>
   <q-dialog v-model="detailVisible">
     <q-card>
       <q-card-section>
-        <div class="text-h6">{{ plant.name }}</div>
-        <q-btn flat round color="primary" icon="info" @click="openCareInstructions"/>
-        <q-btn flat round color="primary" icon="open_in_new" @click="openLink(plant.link)"/>
-        <q-icon
-          style="height: 150px; width: 100px"
-          :name="`img:http://127.0.0.1:8090/api/files/plants/${plant.id}/${plant.picture}`" />
+        <div class="row justify-between">
+          <div class="text-h6 column">
+            {{ plant.name }}
+            <div>
+              <q-btn flat round color="primary" icon="info" @click="openCareInstructions"/>
+              <q-btn flat round color="primary" icon="open_in_new" @click="openLink(plant.link)"/>
+            </div>
+          </div>
+          <div>
+            <q-icon
+              style="height: 150px; width: 100px;"
+              :name="`img:http://127.0.0.1:8090/api/files/plants/${plant.id}/${plant.picture}`"
+            />
+          </div>
+        </div>
       </q-card-section>
 
       <q-card-section>
         <div class="text-weight-bold">Add Logbook entry</div>
-        <div class="row">
-          <div class="column col-6">
-            <q-select
-              v-model="creatorName"
-              :options="creatorNames"
-              label="Name"
-            />
-            <q-select
-              v-if="!waterNeeded"
-              v-model="waterLevel"
-              :options="waterLevels"
-              label="Water level"
-            />
-          </div>
 
-          <div class="q-pa-md">
-            <q-input
-              v-model="comment"
-              filled
-              autogrow
-              label="Comment"
-              type="textarea"
-            />
+          <div class="row">
+            <div class="column col-6">
+              <q-select
+                v-model="creatorName"
+                :options="creatorNames"
+                label="Name"
+              />
+              <q-select
+                v-if="!waterNeeded"
+                v-model="waterLevel"
+                :options="waterLevels"
+                label="Water level"
+              />
+            </div>
+
+            <div class="col-6">
+              <q-input
+                v-model="comment"
+                autogrow
+                filled
+                label="Comment"
+                type="textarea"
+              />
+            </div>
           </div>
-        </div>
-        <q-btn
-          @click="addLogBookEntry"
-          class="float-right"
-          color="secondary"
-          :label="addBtnTxt"
-        />
+          <q-btn
+            @click="addLogBookEntry"
+            color="secondary"
+            :label="addBtnTxt"
+          />
       </q-card-section>
 
-      <q-card-section class="q-pt-none">
-        <div class="q-pa-md">
+      <q-card-section>
           <q-table
             title="Logbook"
             :rows="getLogsForPlant(plant.id)"
             :columns="columns"
             row-key="name"
           ></q-table>
-        </div>
       </q-card-section>
 
       <q-card-actions align="right">
@@ -121,7 +128,7 @@ export default defineComponent({
   setup (props) {
 
     const plantStore = usePlantStore();
-    const { getLogsForPlant } = storeToRefs(plantStore)
+    const { getLogsForPlant, logs, plants } = storeToRefs(plantStore)
 
     const detailVisible = ref(false);
     const careInstructionsVisible = ref(false);
@@ -130,10 +137,43 @@ export default defineComponent({
     const comment = ref('');
     const waterNeeded = ref(false)
     const addBtnTxt = ref('Add');
+    const plantStatus = ref('');
 
     const status = computed(() => {
       return 'hi' + props.plant.drying_interval
     })
+
+    const checkStatus = () => {
+      const plantId = props.plant.id;
+      const plantLogs = logs.value.filter((log: object) => {
+        return log.fk_plant === plantId
+      });
+
+      const latestPlantLog: object = plantLogs[0];
+
+      console.log('latestPlantLogsss', latestPlantLog)
+      const plant = plants.value.filter(plant => plant.id === plantId);
+      const dryingInterval: number = plant.drying_interval * 86400000;
+
+      const currentDate: number = new Date().getTime();
+      const latestLogDate: number = new Date(latestPlantLog.created).getTime();
+
+      // Check if last log entry is older than 2 days
+      if (latestLogDate + 172800000 < currentDate) {
+        if(latestLogDate + dryingInterval <= currentDate && latestPlantLog.waterlevel === 0) {
+          return 'Water';
+        } else {
+          console.log('current dAte', currentDate)
+          console.log('lates date', latestLogDate)
+          console.log('date difference', latestLogDate + 172800000 < currentDate)
+          return 'Check';
+        }
+      } else {
+        return 'OK';
+      }
+    }
+
+    plantStatus.value = checkStatus();
 
     const openPlantComponent = () => {
       detailVisible.value = true;
@@ -233,7 +273,8 @@ export default defineComponent({
       addLogBookEntry,
       openLink,
       addBtnTxt,
-      waterNeeded
+      waterNeeded,
+      plantStatus
     }
   },
 });
@@ -244,6 +285,10 @@ export default defineComponent({
   margin: 0.5rem;
   width: 15rem;
   height: 15rem;
-  background-color: gray;
+  padding: .5rem;
+  background-color: white;
+  border: #1D1D1D solid 1px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 </style>

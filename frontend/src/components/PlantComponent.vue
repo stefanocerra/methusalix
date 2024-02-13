@@ -7,7 +7,23 @@
     <q-img
       style="height: 150px; width: 100px; border-radius: 5px;"
       :src="`http://127.0.0.1:8090/api/files/plants/${plant.id}/${plant.picture}`" />
-    <p>Status: {{ plantStatus }}</p>
+    <p>Status: <b>{{ plantStatus }}</b></p>
+
+    <p class="text-subtitle2">Water level:</p>
+      <q-linear-progress
+        stripe
+        rounded
+        size="20px"
+        :value="waterLevelIndicator / 100"
+        color="primary"
+        class="q-mt-sm"
+      >
+        <div class="absolute-full flex flex-center">
+          <q-badge color="white" text-color="primary" :label="waterLevelIndicator + '%'" />
+        </div>
+      </q-linear-progress>
+
+
   </div>
   <q-dialog v-model="detailVisible">
     <q-card>
@@ -138,18 +154,20 @@ export default defineComponent({
     const waterNeeded = ref(false)
     const addBtnTxt = ref('Add');
 
-    // const status = computed(() => {
-    //   return 'hi' + getLogsForPlant(props.plant.id)
-    // })
+    const waterLevelIndicator =  computed(()=> {
+      if (plantStore.getLogsForPlant(props.plant.id).length > 0) {
+        const plantId = props.plant.id;
+        const plantLogs = logs.value.filter((log: object) => {
+          return log.fk_plant === plantId
+        });
 
-    // // const testStore = useTestStore();
-    // const status =  computed(()=> {
-    //   if (plantStore.getLogsForPlant(props.plant.id).length > 0) {
-    //     return plantStore.getLogsForPlant(props.plant.id)[0].created
-    //   } else {
-    //     return '';
-    //   }
-    // });
+        const latestPlantLog: object = plantLogs[0];
+
+        return latestPlantLog.waterlevel;
+      } else {
+        return 0;
+      }
+    })
 
     const plantStatus =  computed(()=> {
       if (plantStore.getLogsForPlant(props.plant.id).length > 0) {
@@ -284,6 +302,7 @@ export default defineComponent({
       openLink,
       addBtnTxt,
       waterNeeded,
+      waterLevelIndicator,
     }
   },
 });

@@ -3,28 +3,37 @@
     class="plant-size row"
     @click="openPlantComponent"
   >
-    <p>{{ plant.name }}</p>
-    <q-img
-      style="height: 150px; width: 100px; border-radius: 5px;"
-      :src="`http://127.0.0.1:8090/api/files/plants/${plant.id}/${plant.picture}`" />
-    <p>Status: <b>{{ plantStatus }}</b></p>
 
-    <p class="text-subtitle2">Water level:</p>
-      <q-linear-progress
-        stripe
-        rounded
-        size="20px"
-        :value="waterLevelIndicator / 100"
-        color="primary"
-        class="q-mt-sm"
-      >
-        <div class="absolute-full flex flex-center">
-          <q-badge color="white" text-color="primary" :label="waterLevelIndicator + '%'" />
+    <div class="col-12">
+      <div class="row justify-between col-12">
+        <div class="col-8">
+          <p class="text-h5 text-weight-thin ">{{ plant.name }}</p>
+          <p>Status: <b>{{ plantStatus }}</b></p>
         </div>
-      </q-linear-progress>
-
-
+        <q-img
+          class="col-4"
+          style="height: 150px; width: 100px; border-radius: 5px;"
+          :src="`http://127.0.0.1:8090/api/files/plants/${plant.id}/${plant.picture}`"
+        />
+      </div>
+      <div>
+        <p>Water level:</p>
+        <q-linear-progress
+          stripe
+          rounded
+          size="20px"
+          :value="waterLevelIndicator / 100"
+          color="primary"
+          class="q-mt-sm"
+        >
+          <div class="absolute-full flex flex-center">
+            <q-badge color="white" text-color="primary" :label="waterLevelIndicator + '%'" />
+          </div>
+        </q-linear-progress>
+      </div>
+    </div>
   </div>
+
   <q-dialog v-model="detailVisible">
     <q-card>
       <q-card-section>
@@ -311,7 +320,7 @@ export default defineComponent({
 <style>
 .plant-size {
   margin: 0.5rem;
-  width: 15rem;
+  width: 23rem;
   height: 15rem;
   padding: .5rem;
   background-color: white;

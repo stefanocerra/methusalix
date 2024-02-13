@@ -57,40 +57,47 @@
       <q-card-section>
         <div class="text-weight-bold">Add Logbook entry</div>
 
+        <div class="q-gutter-md">
           <div class="row">
-            <div class="column col-6">
-              <q-select
-                v-model="creatorName"
-                :options="creatorNames"
-                label="Name"
-              />
-              <q-select
-                v-if="!waterNeeded"
-                v-model="waterLevel"
-                :options="waterLevels"
-                label="Water level"
-              />
-            </div>
-
-            <div class="col-6">
-              <q-input
-                v-model="comment"
-                autogrow
-                filled
-                label="Comment"
-                type="textarea"
-              />
-            </div>
+            <q-select
+              class="col q-mr-sm"
+              v-model="creatorName"
+              :options="creatorNames"
+              label="Name"
+            />
+            <q-select
+              class="col"
+              v-if="!waterNeeded"
+              v-model="waterLevel"
+              :options="waterLevels"
+              label="Water level"
+            />
           </div>
-          <q-btn
-            @click="addLogBookEntry"
-            color="secondary"
-            :label="addBtnTxt"
-          />
+
+          <div class="col-6 q-ml-sm">
+            <q-input
+              v-model="comment"
+              autogrow
+              filled
+              label="Comment"
+              type="textarea"
+            />
+          </div>
+          <q-card-actions align="right">
+            <q-btn
+              align="right"
+              @click="addLogBookEntry"
+              color="primary"
+              :label="addBtnTxt"
+            />
+          </q-card-actions>
+
+        </div>
       </q-card-section>
 
       <q-card-section>
           <q-table
+            style="min-width: fit-content;"
             title="Logbook"
             :rows="getLogsForPlant(plant.id)"
             :columns="columns"
@@ -139,6 +146,8 @@ import {
 import {Plant} from './models'
 import {storeToRefs} from 'pinia';
 import {usePlantStore} from 'stores/PlantStore';
+import {dom} from "quasar";
+import width = dom.width;
 
 export default defineComponent({
   name: 'ExampleComponent',
@@ -269,7 +278,7 @@ export default defineComponent({
       { name: 'creator_name', align: 'center', label: 'Name', field: 'creator_name' },
       { name: 'type', align: 'center', label: 'Type', field: 'type' },
       { name: 'waterlevel', align: 'center', label: 'Water level', field: 'waterlevel' },
-      { name: 'comment', align: 'center', label: 'Comment', field: 'comment' },
+      { name: 'comment', align: 'center', label: 'Comment', field: 'comment'},
     ]
 
     const creatorNames = [

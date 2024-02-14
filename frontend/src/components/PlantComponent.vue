@@ -1,44 +1,40 @@
 <template>
-  <div
-    class="plant-size row"
+  <q-card
+    flat bordered
+    class="plant-size"
     @click="openPlantComponent"
   >
-
-    <div class="col-12">
-      <div class="row justify-between col-12">
-        <div class="col-8">
-          <p class="text-h5 text-weight-thin ">{{ plant.name }}</p>
-          <p>Status: <b>{{ plantStatus }}</b></p>
-        </div>
-        <q-img
-          class="col-4"
-          style="height: 150px; width: 100px; border-radius: 5px;"
-          :src="`http://127.0.0.1:8090/api/files/plants/${plant.id}/${plant.picture}`"
-        />
-      </div>
-      <div>
-        <p>Water level:</p>
+    <q-card-section horizontal>
+      <q-img
+        class="col-4"
+        :src="`http://127.0.0.1:8090/api/files/plants/${plant.id}/${plant.picture}`"
+      />
+      <q-card-section class="column justify-between">
+        <p class="text-h5 text-weight-thin ptolemy card-title">{{ plant.name }}</p>
+        <q-chip square
+                :color="plantStatus === 'OK' ? '' : 'accent'"
+                :icon="plantStatus === 'OK' ? 'cake' : 'event'"
+                :text-color="plantStatus === 'OK' ? '' : 'white'">{{ plantStatus }}</q-chip>
         <q-linear-progress
           stripe
           rounded
           size="20px"
           :value="waterLevelIndicator / 100"
           color="primary"
-          class="q-mt-sm"
         >
           <div class="absolute-full flex flex-center">
-            <q-badge color="white" text-color="primary" :label="waterLevelIndicator + '%'" />
+            <q-badge color="white" text-color="primary" :label="'Level: ' + waterLevelIndicator + '%'" />
           </div>
         </q-linear-progress>
-      </div>
-    </div>
-  </div>
+      </q-card-section>
+    </q-card-section>
+  </q-card>
 
   <q-dialog v-model="detailVisible">
     <q-card>
       <q-card-section>
         <div class="row justify-between">
-          <div class="text-h6 column">
+          <div class="text-h5 column ptolemy">
             {{ plant.name }}
             <div>
               <q-btn flat round color="primary" icon="info" @click="openCareInstructions"/>
@@ -351,6 +347,5 @@ export default defineComponent({
   background-color: white;
   border: #1D1D1D solid 1px;
   border-radius: 10px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 </style>

@@ -2,17 +2,9 @@ version: '3.7'
 
 services:
   methusalix:
-    container_name: frontend
     build:
       context: ./
-      dockerfile: ./Dockerfile_vuejs
-    ports:
-      - "5173:80"
-
-  methusalix_pb:
-    build:
-      context: ./
-      dockerfile: ./Dockerfile_pocketbase
+      dockerfile: ./Dockerfile
     ports:
       - "8090:8080"
     volumes:

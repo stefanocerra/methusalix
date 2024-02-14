@@ -11,7 +11,9 @@
       />
       <q-card-section class="column justify-between">
         <p class="text-h5 text-weight-thin ptolemy card-title">{{ plant.name }}</p>
-        <q-chip square
+        <q-chip
+                class="q-ma-none"
+                square
                 :color="plantStatus === 'OK' ? '' : 'accent'"
                 :icon="plantStatus === 'OK' ? 'cake' : 'event'"
                 :text-color="plantStatus === 'OK' ? '' : 'white'">{{ plantStatus }}</q-chip>
@@ -342,10 +344,5 @@ export default defineComponent({
 .plant-size {
   margin: 0.5rem;
   width: 23rem;
-  height: 15rem;
-  padding: .5rem;
-  background-color: white;
-  border: #1D1D1D solid 1px;
-  border-radius: 10px;
 }
 </style>

@@ -302,11 +302,10 @@ export default defineComponent({
           comment.value = '';
 
           setTimeout(function(){
-            //code goes here
             creatorNameRef.value.resetValidation()
             waterLevelRef.value.resetValidation()
             commentRef.value.resetValidation()
-          }, 0); //
+          }, 0);
 
         } else {
           creatorNameRef.value.validate();
@@ -315,11 +314,17 @@ export default defineComponent({
       } else {
         if (creatorNameRef.value.validate() && commentRef.value.validate()) {
           plantStore.createLogEntry(creatorName.value, 'Water', 100, comment.value, props.plant.id);
-              waterNeeded.value = false;
-              addBtnTxt.value = 'Add';
 
-          creatorNameRef.value.resetValidation()
-          commentRef.value.resetValidation()
+          waterNeeded.value = false;
+          addBtnTxt.value = 'Add';
+
+          creatorName.value = '';
+          comment.value = '';
+
+          setTimeout(function(){
+            creatorNameRef.value.resetValidation()
+            commentRef.value.resetValidation()
+          }, 0);
         } else {
           creatorNameRef.value.validate();
         }

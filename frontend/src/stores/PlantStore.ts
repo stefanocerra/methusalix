@@ -3,14 +3,6 @@ import PocketBase from 'pocketbase';
 
 const pb = new PocketBase('http://127.0.0.1:8090');
 
-// const getLogbookForPlant = (plantId) => {
-//   pb.collection('logbook').getList(1, 50, {
-//     filter: `fk_plant = ${plantId}`,
-//   }).then(logs => {
-//     console.log("plant logs", plantId, logs)
-//   });
-// }
-
 export const usePlantStore = defineStore('plant', {
   state: () => ({
     plants: [],
@@ -19,6 +11,7 @@ export const usePlantStore = defineStore('plant', {
   getters: {
     getLogsForPlant: (state) => {
       return (plantId: string) => state.logs.filter((log) => {
+        log.created = log.created.split('.')[0]
         return log.fk_plant === plantId
       })
     },
@@ -30,18 +23,12 @@ export const usePlantStore = defineStore('plant', {
         expand: 'logbook(plants).fk_plant'
       }).then(plants => {
         this.plants = plants
-        /*for (const plant of plants) {
-          getLogbookForPlant(plant.id)
-        }*/
       }).catch((error) => console.log(error));
 
       pb.collection('logbook').getFullList({
         sort: '-created, fk_plant'
       }).then(logs => {
         this.logs = logs
-        /*for (const plant of plants) {
-          getLogbookForPlant(plant.id)
-        }*/
       }).catch((error) => console.log(error));
 
       pb.collection('logbook').subscribe('*',  (e) => {

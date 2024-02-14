@@ -33,7 +33,9 @@
   </q-card>
 
   <q-dialog v-model="detailVisible">
-    <q-card>
+    <q-card
+      style="min-width: 50rem"
+    >
       <q-card-section>
         <div class="row justify-between">
           <div class="text-h5 column ptolemy">
@@ -63,7 +65,7 @@
               v-model="creatorName"
               :options="creatorNames"
               label="Name"
-              :rules="creatorNameRules"
+              :rules="[val => (val && val.length > 0) || 'Please type something']"
             />
             <q-select
               class="col"
@@ -72,17 +74,19 @@
               v-model="waterLevel"
               :options="waterLevels"
               label="Water level"
-              :rules="waterLevelRules"
+              :rules="[val => (val && val.length > 0) || 'Please type something']"
             />
           </div>
 
           <div class="col-6 q-ml-sm">
             <q-input
+              ref="commentRef"
               v-model="comment"
               autogrow
               filled
               label="Comment"
               type="textarea"
+              :rules="[ val => val.length <= 40 || 'Please use maximum 40 characters']"
             />
           </div>
           <div class="flex justify-end">
@@ -93,7 +97,6 @@
               :label="addBtnTxt"
             />
           </div>
-
         </div>
       </q-card-section>
 
@@ -104,7 +107,40 @@
             :rows="getLogsForPlant(plant.id)"
             :columns="columns"
             row-key="name"
-          ></q-table>
+          >
+            <template v-slot:header="props">
+              <q-tr :props="props">
+                <q-th
+                  v-for="col in props.cols"
+                  :key="col.name"
+                  :props="props"
+                >
+                  {{ col.label }}
+                </q-th>
+                <q-th>
+                  Comment
+                </q-th>
+              </q-tr>
+            </template>
+            <template v-slot:body="props">
+              <q-tr auto-width :props="props" >
+                <q-td
+                  v-for="col in props.cols"
+                  :key="col.name"
+                  :props="props"
+                >
+                  {{ col.value }}
+                </q-td>
+                <q-td class="text-center">
+                  <q-btn icon="info" round dense flat color="accent">
+                    <q-tooltip>
+                      {{ props.row.comment ? props.row.comment : 'Kein Kommentar verfügbar.'}}
+                    </q-tooltip>
+                  </q-btn>
+                </q-td>
+              </q-tr>
+            </template>
+          </q-table>
       </q-card-section>
 
       <q-card-actions align="right">
@@ -167,12 +203,13 @@ export default defineComponent({
     const detailVisible = ref(false);
     const careInstructionsVisible = ref(false);
     const creatorNameRef = ref(null);
-    const creatorName = ref(null);
+    const creatorName = ref('');
     const waterLevelRef = ref(null);
-    const waterLevel = ref(null);
+    const waterLevel = ref('');
     const comment = ref('');
     const waterNeeded = ref(false)
     const addBtnTxt = ref('Add');
+    const commentRef = ref(null);
 
 
     const waterLevelIndicator =  computed(()=> {
@@ -247,16 +284,9 @@ export default defineComponent({
       careInstructionsVisible.value = true;
     }
 
-    const creatorNameRules = [val => (val && val.length > 0) || 'Please type something'];
-    const waterLevelRules = [val => (val && val.length > 0) || 'Please type something'];
-
-
     const addLogBookEntry = () => {
-      creatorNameRef.value.validate();
-      waterLevelRef.value.validate();
-
-      if (!creatorNameRef.value.hasError && !waterLevelRef.value.hasError) {
-        if (!waterNeeded.value) {
+      if (!waterNeeded.value) {
+        if (creatorNameRef.value.validate() && waterLevelRef.value.validate() && commentRef.value.validate()) {
           const convertedWaterLvl = waterLevel.value.split('%')[0];
 
           if (parseInt(convertedWaterLvl) === 0) {
@@ -265,17 +295,34 @@ export default defineComponent({
           }
 
           plantStore.createLogEntry(creatorName.value, 'Check', parseInt(convertedWaterLvl) , comment.value, props.plant.id);
-        } else {
-          plantStore.createLogEntry(creatorName.value, 'Water', 100, comment.value, props.plant.id);
-          waterNeeded.value = false;
-          addBtnTxt.value = 'Add';
-        }
 
-        creatorName.value = null;
-        waterLevel.value = null;
-        comment.value = '';
-        creatorNameRef.value.resetValidation()
-        waterLevelRef.value.resetValidation()
+          console.log('test')
+          creatorName.value = '';
+          waterLevel.value = '';
+          comment.value = '';
+
+          setTimeout(function(){
+            //code goes here
+            creatorNameRef.value.resetValidation()
+            waterLevelRef.value.resetValidation()
+            commentRef.value.resetValidation()
+          }, 0); //
+
+        } else {
+          creatorNameRef.value.validate();
+          waterLevelRef.value.validate();
+        }
+      } else {
+        if (creatorNameRef.value.validate() && commentRef.value.validate()) {
+          plantStore.createLogEntry(creatorName.value, 'Water', 100, comment.value, props.plant.id);
+              waterNeeded.value = false;
+              addBtnTxt.value = 'Add';
+
+          creatorNameRef.value.resetValidation()
+          commentRef.value.resetValidation()
+        } else {
+          creatorNameRef.value.validate();
+        }
       }
     }
 
@@ -288,7 +335,6 @@ export default defineComponent({
       { name: 'creator_name', align: 'center', label: 'Name', field: 'creator_name' },
       { name: 'type', align: 'center', label: 'Type', field: 'type' },
       { name: 'waterlevel', align: 'center', label: 'Water level', field: 'waterlevel' },
-      { name: 'comment', align: 'center', label: 'Comment', field: 'comment'},
     ]
 
     const creatorNames = [
@@ -313,6 +359,8 @@ export default defineComponent({
       '75%',
       '100%',
     ]
+
+
     return {
       plantStatus,
       detailVisible,
@@ -332,9 +380,8 @@ export default defineComponent({
       waterNeeded,
       waterLevelIndicator,
       creatorNameRef,
-      creatorNameRules,
       waterLevelRef,
-      waterLevelRules
+      commentRef
     }
   },
 });

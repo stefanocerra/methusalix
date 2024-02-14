@@ -41,8 +41,16 @@
           <div class="text-h5 column ptolemy">
             {{ plant.name }}
             <div>
-              <q-btn flat round color="primary" icon="info" @click="openCareInstructions"/>
-              <q-btn flat round color="primary" icon="open_in_new" @click="openLink(plant.link)"/>
+              <q-btn flat round color="primary" icon="info" @click="openCareInstructions">
+                <q-tooltip>
+                  Show care instructions
+                </q-tooltip>
+              </q-btn>
+              <q-btn flat round color="primary" icon="open_in_new" @click="openLink(plant.link)">
+                <q-tooltip>
+                  Show plant information
+                </q-tooltip>
+              </q-btn>
             </div>
           </div>
           <div>
@@ -132,9 +140,9 @@
                   {{ col.value }}
                 </q-td>
                 <q-td class="text-center">
-                  <q-btn icon="info" round dense flat color="accent">
+                  <q-btn icon="info" round dense flat color="accent" v-if="props.row.comment">
                     <q-tooltip>
-                      {{ props.row.comment ? props.row.comment : 'Kein Kommentar verfügbar.'}}
+                      {{ props.row.comment }}
                     </q-tooltip>
                   </q-btn>
                 </q-td>
@@ -198,7 +206,7 @@ export default defineComponent({
   setup (props) {
 
     const plantStore = usePlantStore();
-    const { getLogsForPlant, logs, plants } = storeToRefs(plantStore)
+    const { getLogsForPlant, logs } = storeToRefs(plantStore)
 
     const detailVisible = ref(false);
     const careInstructionsVisible = ref(false);
@@ -336,10 +344,10 @@ export default defineComponent({
     }
 
     const columns = [
-      { name: 'date', align: 'center', label: 'Date', field: 'created' },
-      { name: 'creator_name', align: 'center', label: 'Name', field: 'creator_name' },
-      { name: 'type', align: 'center', label: 'Type', field: 'type' },
-      { name: 'waterlevel', align: 'center', label: 'Water level', field: 'waterlevel' },
+      { name: 'date', align: 'left', label: 'Date', field: 'created', format: (val: string) => new Date(val).toLocaleString() },
+      { name: 'creator_name', align: 'left', label: 'Name', field: 'creator_name' },
+      { name: 'type', align: 'left', label: 'Type', field: 'type' },
+      { name: 'waterlevel', align: 'left', label: 'Water level', field: 'waterlevel', format: (val: string) => `${val}%` },
     ]
 
     const creatorNames = [

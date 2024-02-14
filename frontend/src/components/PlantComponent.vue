@@ -1,7 +1,7 @@
 <template>
   <q-card
     flat bordered
-    class="plant-size"
+    class="plant-size cursor-pointer"
     @click="openPlantComponent"
   >
     <q-card-section horizontal>
@@ -339,10 +339,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style>
-.plant-size {
-  margin: 0.5rem;
-  width: 23rem;
-}
-</style>

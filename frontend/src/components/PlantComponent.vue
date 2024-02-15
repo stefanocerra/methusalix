@@ -32,10 +32,8 @@
     </q-card-section>
   </q-card>
 
-  <q-dialog v-model="detailVisible">
-    <q-card
-      style="min-width: 50rem"
-    >
+  <q-dialog v-model="detailVisible" :maximized="$q.screen.lt.sm">
+    <q-card class="detail-card-size">
       <q-card-section>
         <div class="row justify-between">
           <div class="text-h5 column ptolemy">
@@ -219,7 +217,7 @@ export default defineComponent({
     const addBtnTxt = ref('Add');
     const commentRef = ref(null);
 
-    const windowOrigin = window.origin;
+    const windowOrigin = window.origin.includes('localhost') ? 'http://127.0.0.1:8090' : window.origin;
 
     const waterLevelIndicator =  computed(()=> {
       if (plantStore.getLogsForPlant(props.plant.id).length > 0) {
@@ -280,7 +278,7 @@ export default defineComponent({
 
       const latestPlantLog = plantStore.getLatestLog(props.plant.id)[0];
 
-      if (latestPlantLog.waterlevel === 0) {
+      if (latestPlantLog && latestPlantLog.waterlevel === 0) {
         waterNeeded.value = true;
         addBtnTxt.value = 'Watered';
       } else {

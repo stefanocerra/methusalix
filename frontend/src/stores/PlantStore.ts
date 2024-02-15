@@ -12,7 +12,6 @@ export const usePlantStore = defineStore('plant', {
   getters: {
     getLogsForPlant: (state) => {
       return (plantId: string) => state.logs.filter((log) => {
-        log.created = log.created.split('.')[0]
         return log.fk_plant === plantId
       })
     },

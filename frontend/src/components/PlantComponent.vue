@@ -101,6 +101,7 @@
               @click="addLogBookEntry"
               color="primary"
               :label="addBtnTxt"
+              v-close-popup
             />
           </div>
         </div>

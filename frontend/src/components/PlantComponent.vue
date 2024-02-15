@@ -7,7 +7,7 @@
     <q-card-section horizontal>
       <q-img
         class="col-4"
-        :src="`${window.origin}/api/files/plants/${plant.id}/${plant.picture}`"
+        :src="`${windowOrigin}/api/files/plants/${plant.id}/${plant.picture}`"
       />
       <q-card-section class="column justify-between">
         <p class="text-h5 text-weight-thin ptolemy card-title">{{ plant.name }}</p>
@@ -56,7 +56,7 @@
           <div>
             <q-img
               style="height: 150px; width: 100px; border-radius: 5px;"
-              :src="`${window.origin}/api/files/plants/${plant.id}/${plant.picture}`"
+              :src="`${windowOrigin}/api/files/plants/${plant.id}/${plant.picture}`"
             />
           </div>
         </div>
@@ -219,6 +219,7 @@ export default defineComponent({
     const addBtnTxt = ref('Add');
     const commentRef = ref(null);
 
+    const windowOrigin = window.origin;
 
     const waterLevelIndicator =  computed(()=> {
       if (plantStore.getLogsForPlant(props.plant.id).length > 0) {
@@ -394,7 +395,8 @@ export default defineComponent({
       waterLevelIndicator,
       creatorNameRef,
       waterLevelRef,
-      commentRef
+      commentRef,
+      windowOrigin
     }
   },
 });

@@ -7,7 +7,7 @@
     <q-card-section horizontal>
       <q-img
         class="col-4"
-        :src="`http://127.0.0.1:8090/api/files/plants/${plant.id}/${plant.picture}`"
+        :src="`${window.origin}/api/files/plants/${plant.id}/${plant.picture}`"
       />
       <q-card-section class="column justify-between">
         <p class="text-h5 text-weight-thin ptolemy card-title">{{ plant.name }}</p>
@@ -56,7 +56,7 @@
           <div>
             <q-img
               style="height: 150px; width: 100px; border-radius: 5px;"
-              :src="`http://127.0.0.1:8090/api/files/plants/${plant.id}/${plant.picture}`"
+              :src="`${window.origin}/api/files/plants/${plant.id}/${plant.picture}`"
             />
           </div>
         </div>
